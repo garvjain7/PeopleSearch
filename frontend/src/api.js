@@ -1,6 +1,6 @@
 export const searchExperts = async (query, domain) => {
   try {
-    const response = await fetch('http://localhost:8000/api/v1/experts/find', {
+    const response = await fetch('http://localhost:8080/api/v1/experts/find', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

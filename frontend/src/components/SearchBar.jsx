@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import './index.css';
 
 const SearchBar = ({ onSearch, isLoading }) => {
   const [query, setQuery] = useState('');

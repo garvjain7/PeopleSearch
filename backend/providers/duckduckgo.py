@@ -1,7 +1,9 @@
 import logging
+import random
+import time
 from typing import List, Dict, Any
 from duckduckgo_search import DDGS
-from .base import SearchProvider
+from backend.providers.base import SearchProvider
 from backend.utils.retry import retry_with_backoff
 
 logger = logging.getLogger(__name__)
@@ -16,17 +18,20 @@ class DuckDuckGoProvider(SearchProvider):
         logger.info(f"Executing DDG search: {full_query}")
         
         def _do_search():
+            # Add randomized human-like delay to bypass bot detection
+            delay = random.uniform(2.0, 5.0)
+            logger.info(f"Sleeping for {delay:.2f}s before request...")
+            time.sleep(delay)
+            
             results = []
             with DDGS() as ddgs:
-                # ddgs.text returns an iterator. We fetch up to max_results.
                 ddg_results = ddgs.text(full_query, max_results=max_results)
                 for r in ddg_results:
                     results.append(r)
             return results
 
         try:
-            # We use retry_with_backoff to handle potential rate limiting
             return retry_with_backoff(_do_search, retries=3, initial_delay=2.0)
         except Exception as e:
             logger.error(f"DuckDuckGo search failed: {e}")
-            return []
+            return None

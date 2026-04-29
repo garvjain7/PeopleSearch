@@ -30,7 +30,7 @@ python -m venv venv
 # source venv/bin/activate
 
 pip install -r backend/requirements.txt
-python -m backend.main
+python -m main
 ```
 The backend will be available at `http://localhost:8000`.
 

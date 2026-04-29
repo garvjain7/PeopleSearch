@@ -1,5 +1,3 @@
-import './index.css';
-
 const ExpertCard = ({ expert }) => {
   const { profile, score, reason } = expert;
   

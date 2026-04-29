@@ -1,0 +1,14 @@
+{
+  "name": "linkedin-expert-finder",
+  "version": "1.0.0",
+  "description": "LinkedIn Similar Expert Finder MVP",
+  "scripts": {
+    "start": "concurrently \".\\venv\\Scripts\\python main.py\" \"cd frontend && npm run dev\"",
+    "install:all": "python -m venv venv && .\\venv\\Scripts\\pip install -r backend/requirements.txt && cd frontend && npm install",
+    "dev:backend": ".\\venv\\Scripts\\python main.py",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

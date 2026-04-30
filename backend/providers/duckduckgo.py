@@ -1,6 +1,4 @@
 import logging
-import random
-import time
 from typing import List, Dict, Any
 from duckduckgo_search import DDGS
 from backend.providers.base import SearchProvider
@@ -13,25 +11,23 @@ class DuckDuckGoProvider(SearchProvider):
         """
         Uses DuckDuckGo to search for LinkedIn profiles.
         Query format: site:linkedin.com/in <query>
+        Used as fallback when SerpAPI is unavailable.
+        Note: DDG has unreliable site: operator support for LinkedIn — expect fewer results.
         """
         full_query = f'site:linkedin.com/in {query}'
-        logger.info(f"Executing DDG search: {full_query}")
-        
+        logger.info(f"[DDG Fallback] Executing search: {full_query}")
+
         def _do_search():
-            # Add randomized human-like delay to bypass bot detection
-            delay = random.uniform(2.0, 5.0)
-            logger.info(f"Sleeping for {delay:.2f}s before request...")
-            time.sleep(delay)
-            
             results = []
             with DDGS() as ddgs:
-                ddg_results = ddgs.text(full_query, max_results=max_results)
-                for r in ddg_results:
+                for r in ddgs.text(full_query, max_results=max_results):
                     results.append(r)
             return results
 
         try:
-            return retry_with_backoff(_do_search, retries=3, initial_delay=2.0)
+            results = retry_with_backoff(_do_search, retries=2, initial_delay=1.0)
+            logger.info(f"[DDG Fallback] Returned {len(results)} raw results.")
+            return results if results is not None else []
         except Exception as e:
-            logger.error(f"DuckDuckGo search failed: {e}")
-            return None
+            logger.error(f"[DDG Fallback] Search failed after retries: {e}")
+            return []
